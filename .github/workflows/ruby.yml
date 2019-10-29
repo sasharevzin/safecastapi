@@ -13,7 +13,7 @@ jobs:
 
     services:
       postgres:
-        image: mdillon/postgis:11
+        image: mdillon/postgis:9.5
         ports:
           - 5432:5432
         env:
@@ -31,14 +31,14 @@ jobs:
 
     - name: Bundle
       run: |
-        gem install bundler -v 1.17.3
-        bundle install --jobs 4 --retry 3
+        gem install bundler -v 1.17.3 --no-document
+        bundle install --jobs 4 --retry 3 --deployment
 
     - name: Setup Database
       run: |
         rm -f config/database.yml
-        RAILS_ENV=test bundle exec rake db:create
-        RAILS_ENV=test bundle exec rake db:structure:load
+        RAILS_ENV=test bundle exec rake db:create db:structure:load
+        RAILS_ENV=test bundle exec rake db:migrate:status
 
     - name: Rubocop
       run: |
