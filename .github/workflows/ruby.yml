@@ -6,11 +6,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    container:
-      image: ruby:2.4.9
-      env:
-        DATABASE_URL: postgis://postgres:postgres@postgres:5432/safecast_test?schema_search_path=public,postgis&encoding=unicode&pool=5
-
     services:
       postgres:
         image: mdillon/postgis:9.5
@@ -21,13 +16,18 @@ jobs:
           POSTGRES_PASSWORD: postgres
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
+    container:
+      image: ruby:2.4.9
+      env:
+        DATABASE_URL: postgis://postgres:postgres@postgres:5432/safecast_test?schema_search_path=public,postgis&encoding=unicode&pool=5
+
     steps:
     - uses: actions/checkout@master
 
-    - name: Setup NodeJS
+    - name: Install packages
       run: |
         apt update
-        apt install nodejs -y
+        apt install nodejs postgresql-client -y
 
     - name: Bundle
       run: |
@@ -37,8 +37,9 @@ jobs:
     - name: Setup Database
       run: |
         rm -f config/database.yml
+        ruby --version
+        echo $DATABASE_URL
         RAILS_ENV=test bundle exec rake db:create db:structure:load
-        RAILS_ENV=test bundle exec rake db:migrate:status
 
     - name: Rubocop
       run: |
