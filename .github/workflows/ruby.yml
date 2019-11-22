@@ -9,7 +9,7 @@ jobs:
     container:
       image: ruby:2.4.9
       env:
-        DATABASE_URL: postgis://postgres:postgres@postgres:5432/safecast_test?schema_search_path=public,postgis&encoding=unicode
+        DATABASE_URL: postgis://postgres:postgres@postgres:5432/safecast_test?schema_search_path=public,postgis&encoding=unicode&pool=5
 
     services:
       postgres:
